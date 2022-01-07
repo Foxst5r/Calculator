@@ -19,16 +19,33 @@ enum class TokenType {
 
 // 123, DIGITS
 class Token {
+    std::string value;
+    TokenType tokenType;
+    int lastIdx;
 public:
-    // constructor()
+    //default constructor()
     Token() = default;
+
+    //constructor ()
+    Token(const std::string & value, TokenType tokenType, int lastIdx)
+    : value(value), tokenType(tokenType), lastIdx(lastIdx) {
+
+    }
 
     // copy constructor
     Token(Token const& token) = default;
 
-    std::string value;
-    TokenType tokenType;
-    int lastIdx;
+    const std::string & getValue() const {
+        return value;
+    }
+
+    TokenType getTokenType() const {
+        return tokenType;
+    }
+
+    int getLastIdx() const {
+        return lastIdx;
+    }
 
     int precedence() {
         if (this->tokenType == TokenType::PLUS || this->tokenType == TokenType::MINUS) {

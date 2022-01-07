@@ -11,9 +11,7 @@
 #include "Token.h"
 Token detectDigit(std::string input, int startIdx) {
     if (isdigit(input[startIdx]) == false) {
-        Token token;
-        token.tokenType = TokenType::ERROR;
-        token.lastIdx = input.size();
+        Token token(input,TokenType::ERROR, input.size());
         return token;
     }
 
@@ -26,94 +24,61 @@ Token detectDigit(std::string input, int startIdx) {
             break;
         }
     }
-    Token token;
-    token.value = digits;
-    token.tokenType = TokenType::DIGITS;
-    token.lastIdx = i;
+    Token token(digits,TokenType::DIGITS, i);;
     return token;
 }
 
 Token detectPlus(std::string input, int startIdx) {
     if (input[startIdx] != '+') {
-        Token token;
-        token.tokenType = TokenType::ERROR;
-        token.lastIdx = input.size();
+        Token token(input,TokenType::ERROR, input.size());
         return token;
     }
-    Token token;
-    token.value = "+";
-    token.tokenType = TokenType::PLUS;
-    token.lastIdx = startIdx + 1;
+    Token token("+",TokenType::PLUS, startIdx + 1);
     return token;
 }
 
 Token detectMinus(std::string input, int startIdx) {
     if (input[startIdx] != '-') {
-        Token token;
-        token.tokenType = TokenType::ERROR;
-        token.lastIdx = input.size();
+        Token token(input,TokenType::ERROR, input.size());
         return token;
     }
-    Token token;
-    token.value = "-";
-    token.tokenType = TokenType::MINUS;
-    token.lastIdx = startIdx + 1;
+    Token token("-",TokenType::MINUS, startIdx + 1);
     return token;
 }
 
 Token detectMultiply(std::string input, int startIdx) {
     if (input[startIdx] != '*') {
-        Token token;
-        token.tokenType = TokenType::ERROR;
-        token.lastIdx = input.size();
+        Token token(input,TokenType::ERROR, input.size());
         return token;
     }
-    Token token;
-    token.value = "*";
-    token.tokenType = TokenType::MULTIPLY;
-    token.lastIdx = startIdx + 1;
+    Token token("*",TokenType::MULTIPLY, startIdx + 1);
     return token;
 }
 
 Token detectDivide(std::string input, int startIdx) {
     if (input[startIdx] != '/') {
-        Token token;
-        token.tokenType = TokenType::ERROR;
-        token.lastIdx = input.size();
+        Token token(input,TokenType::ERROR, input.size());
         return token;
     }
-    Token token;
-    token.value = "/";
-    token.tokenType = TokenType::DIVIDE;
-    token.lastIdx = startIdx + 1;
+    Token token("/",TokenType::DIVIDE, startIdx + 1);
     return token;
 }
 
 Token detectOpen(std::string input, int startIdx) {
     if (input[startIdx] != '(') {
-        Token token;
-        token.tokenType = TokenType::ERROR;
-        token.lastIdx = input.size();
+        Token token(input,TokenType::ERROR, input.size());
         return token;
     }
-    Token token;
-    token.value = "(";
-    token.tokenType = TokenType::OPEN_PARENTHESES;
-    token.lastIdx = startIdx + 1;
+    Token token("(",TokenType::OPEN_PARENTHESES, startIdx + 1);;
     return token;
 }
 
 Token detectClose(std::string input, int startIdx) {
     if (input[startIdx] != ')') {
-        Token token;
-        token.tokenType = TokenType::ERROR;
-        token.lastIdx = input.size();
+        Token token(input,TokenType::ERROR, input.size());
         return token;
     }
-    Token token;
-    token.value = ")";
-    token.tokenType = TokenType::CLOSE_PARENTHESES;
-    token.lastIdx = startIdx + 1;
+    Token token(")",TokenType::CLOSE_PARENTHESES, startIdx + 1);
     return token;
 }
 
@@ -123,31 +88,31 @@ std::vector<Token> tokenizer(std::string input) {
     for (int i = 0; i < input.length();) {
         if (isdigit(input[i])) {
             Token token = detectDigit(input, i);
-            i = token.lastIdx;
+            i = token.getLastIdx();
             tokenList.push_back(token);
         } else if (input[i] == '+') {
             Token token = detectPlus(input, i);
-            i = token.lastIdx;
+            i = token.getLastIdx();
             tokenList.push_back(token);
         } else if (input[i] == '-') {
             Token token = detectMinus(input, i);
-            i = token.lastIdx;
+            i = token.getLastIdx();
             tokenList.push_back(token);
         } else if (input[i] == '*') {
             Token token = detectMultiply(input, i);
-            i = token.lastIdx;
+            i = token.getLastIdx();
             tokenList.push_back(token);
         } else if (input[i] == '/') {
             Token token = detectDivide(input, i);
-            i = token.lastIdx;
+            i = token.getLastIdx();
             tokenList.push_back(token);
         } else if (input[i] == '(') {
             Token token = detectOpen(input, i);
-            i = token.lastIdx;
+            i = token.getLastIdx();
             tokenList.push_back(token);
         } else if (input[i] == ')') {
             Token token = detectClose(input, i);
-            i = token.lastIdx;
+            i = token.getLastIdx();
             tokenList.push_back(token);
         } else {
             i++;
@@ -162,14 +127,14 @@ std::vector<Token> infixToPostfix(std::vector<Token> infix) {
     std::vector<Token> postfix;
     for (int i = 0; i < infix.size(); i++) {
         Token token = infix[i];
-        if (token.tokenType == TokenType::DIGITS) {
+        if (token.getTokenType() == TokenType::DIGITS) {
             postfix.push_back(token);
-        } else if (token.tokenType == TokenType::OPEN_PARENTHESES) {
+        } else if (token.getTokenType() == TokenType::OPEN_PARENTHESES) {
             st.push(token);
-        } else if (token.tokenType == TokenType::CLOSE_PARENTHESES) {
+        } else if (token.getTokenType() == TokenType::CLOSE_PARENTHESES) {
             while(!st.empty()) {
                 Token top = st.top();
-                if(top.tokenType != TokenType::OPEN_PARENTHESES) {
+                if(top.getTokenType() != TokenType::OPEN_PARENTHESES) {
                     postfix.push_back(top);
                     st.pop();
                 } else {
@@ -197,7 +162,7 @@ std::vector<Token> infixToPostfix(std::vector<Token> infix) {
 void printToken(std::vector<Token> tokenList) {
     for (int i = 0; i < tokenList.size(); ++i) {
         Token token = tokenList[i];
-        std::cout << token.value << ", " << (int) token.tokenType << "\n";
+        std::cout << token.getValue() << ", " << (int) token.getTokenType() << "\n";
     }
 }
 
@@ -206,54 +171,46 @@ float calculatePostfix(std::vector<Token>postfix) {
     float answer;
     for (int i = 0; i < postfix.size(); i++) {
         Token token = postfix[i];
-        if (token.tokenType == TokenType::DIGITS) {
+        if (token.getTokenType() == TokenType::DIGITS) {
             st.push(token);
         } else {
             float value1;
             float value2;
             Token top = st.top();
-            value1 = stof(top.value);
+            value1 = stof(top.getValue());
             st.pop();
             top = st.top();
-            value2 = stof(top.value);
+            value2 = stof(top.getValue());
             st.pop();
-            if (token.tokenType == TokenType::PLUS) {
+            if (token.getTokenType() == TokenType::PLUS) {
                 float value3;
                 value3 = value1 + value2;
                 std::string result = std::to_string(value3);
-                Token convert;
-                convert.value = result;
-                convert.tokenType = TokenType::DIGITS;
+                Token convert(result,TokenType::DIGITS,0);
                 st.push(convert);
-            } else if (token.tokenType == TokenType::MINUS) {
+            } else if (token.getTokenType() == TokenType::MINUS) {
                 float value3;
                 value3 = value2 - value1;
                 std::string result = std::to_string(value3);
-                Token convert;
-                convert.value = result;
-                convert.tokenType = TokenType::DIGITS;
+                Token convert(result,TokenType::DIGITS,0);
                 st.push(convert);
-            } else if (token.tokenType == TokenType::DIVIDE) {
+            } else if (token.getTokenType() == TokenType::DIVIDE) {
                 float value3;
                 value3 = value2 / value1;
                 std::string result = std::to_string(value3);
-                Token convert;
-                convert.value = result;
-                convert.tokenType = TokenType::DIGITS;
+                Token convert(result,TokenType::DIGITS,0);
                 st.push(convert);
-            } else if (token.tokenType == TokenType::MULTIPLY) {
+            } else if (token.getTokenType() == TokenType::MULTIPLY) {
                 float value3;
                 value3 = value1 * value2;
                 std::string result = std::to_string(value3);
-                Token convert;
-                convert.value = result;
-                convert.tokenType = TokenType::DIGITS;
+                Token convert(result,TokenType::DIGITS,0);
                 st.push(convert);
             }
         }
     }
     Token top = st.top();
-    answer = stof(top.value);
+    answer = stof(top.getValue());
     return answer;
 }
 
